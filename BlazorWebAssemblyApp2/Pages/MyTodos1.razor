@@ -1,0 +1,54 @@
+﻿@page "/mytodos1"
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@inject HttpClient Http
+
+<h3>MyTodos1</h3>
+
+@if (todos == null)
+{
+    <p><em>Loading... </em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User Id</th>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Completed</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var todo in todos)
+            {
+                <tr>
+                    <td>@todo.UserId</td>
+                    <td>@todo.Id</td>
+                    <td>@todo.Title</td>
+                    <td>@(todo.Completed == true ? "Yes" : "No")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private Todo[] todos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        todos = await Http.GetFromJsonAsync<Todo[]>(Configuration["JsonPlaceHolderApiBaseUrl"] + "todos");
+    }
+
+    public class Todo
+    {
+        public int UserId { get; set; }
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public bool Completed { get; set; }
+    }
+
+}
